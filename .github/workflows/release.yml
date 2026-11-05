@@ -68,15 +68,19 @@ jobs:
           ./gradlew assembleRelease
 
       - name: Organize Release Artifacts
+        id: artifacts
         run: |
           mkdir -p release_output
-          find app/build/outputs/apk/release/ -name "*.apk" -exec cp {} release_output/Termux-API-signed.apk \;
-          (cd release_output && sha256sum Termux-API-signed.apk > checksums-sha256.txt)
+          VERSION="${{ steps.version.outputs.version_name }}"
+          APK_NAME="antigem-termux-api-v${VERSION}.apk"
+          find app/build/outputs/apk/release/ -name "*.apk" -exec cp {} "release_output/${APK_NAME}" \;
+          (cd release_output && sha256sum "${APK_NAME}" > checksums-sha256.txt)
+          echo "apk_name=${APK_NAME}" >> $GITHUB_OUTPUT
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Termux-API-signed
+          name: ${{ steps.artifacts.outputs.apk_name }}
           path: release_output/*
 
       - name: Publish GitHub Release
@@ -84,15 +88,16 @@ jobs:
         if: github.ref == 'refs/heads/master' || github.event_name == 'workflow_dispatch'
         with:
           tag_name: ${{ steps.version.outputs.tag }}
-          name: Termux:API ${{ steps.version.outputs.tag }} (Signed)
+          name: AntiGem Termux:API v${{ steps.version.outputs.version_name }}
           body: |
             Custom-signed Termux:API companion APK for AntiGem.
             
-            - Built from upstream commit: ${{ github.sha }}
+            - Version: v${{ steps.version.outputs.version_name }}
+            - Built from commit: ${{ github.sha }}
             - Signed with AntiGem release certificate for full API integration.
             - SHA256 checksum:
             ```
-            ${{ hashFiles('release_output/Termux-API-signed.apk') }}
+            ${{ hashFiles(format('release_output/{0}', steps.artifacts.outputs.apk_name)) }}
             ```
           draft: false
           prerelease: false
