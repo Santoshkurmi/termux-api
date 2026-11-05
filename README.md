@@ -1,4 +1,4 @@
-# Termux API
+# Termux API For Antigem Termux variant app(Not for offical termux)
 
 [![Build status](https://github.com/termux/termux-api/workflows/Build/badge.svg)](https://github.com/termux/termux-api/actions)
 [![Join the chat at https://gitter.im/termux/termux](https://badges.gitter.im/termux/termux.svg)](https://gitter.im/termux/termux)
