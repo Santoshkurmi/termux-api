@@ -142,7 +142,7 @@
         <!-- If you see "Unresolved package" errors for ReportActivity with manifest placeholder,
              ignore it. Android Studio linter is broken and correct package name will be used at build time. -->
         <activity
-            android:name="${TERMUX_PACKAGE_NAME}.shared.activities.ReportActivity"
+            android:name="com.termux.shared.activities.ReportActivity"
             android:exported="false"
             android:documentLaunchMode="intoExisting"
             android:theme="@style/Theme.MarkdownViewActivity.DayNight"
@@ -162,8 +162,13 @@
         <receiver android:name=".TermuxApiReceiver"
             android:exported="false" />
 
+        <!-- AntiGem: the termux-api package (rewritten for AntiGem) calls ai.antigem.api/.TermuxApiReceiver, which
+             Android reads as the class ai.antigem.api.TermuxApiReceiver; this app's Java package stays com.termux.api -->
+        <receiver android:name="ai.antigem.api.TermuxApiReceiver"
+            android:exported="false" />
+
         <receiver
-            android:name="${TERMUX_PACKAGE_NAME}.shared.activities.ReportActivity$ReportActivityBroadcastReceiver"
+            android:name="com.termux.shared.activities.ReportActivity$ReportActivityBroadcastReceiver"
             android:exported="false"
             tools:ignore="MissingClass" />
 
@@ -172,6 +177,13 @@
 
         <service
             android:name=".KeepAliveService"
+            android:description="@string/keep_alive_service"
+            android:enabled="true"
+            android:exported="false" />
+
+        <!-- AntiGem: termux-api-start calls ai.antigem.api/.KeepAliveService (see ai.antigem.api.TermuxApiReceiver above) -->
+        <service
+            android:name="ai.antigem.api.KeepAliveService"
             android:description="@string/keep_alive_service"
             android:enabled="true"
             android:exported="false" />
